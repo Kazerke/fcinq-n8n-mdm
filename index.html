@@ -100,27 +100,56 @@
       border-radius: 12px;
       margin-bottom: 32px;
     }
-    
+
     .demo-info h3 {
       color: var(--primary);
       font-size: 16px;
       font-weight: 600;
       margin-bottom: 8px;
     }
-    
+
     .demo-info p {
       color: #475569;
       font-size: 14px;
       line-height: 1.6;
+    }
+
+    .loading-section {
+      display: none;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .loading-section.active {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+    }
+
+    .video-container {
+      flex: 1;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      min-width: 0;
+    }
+
+    .video-container video {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .status-wrapper {
+      flex: 1;
+      min-width: 0;
     }
     
     .hint {
       font-size: 14px;
       color: #64748b;
       margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      text-align: center;
     }
     
     button {
@@ -178,16 +207,11 @@
     }
     
     .status {
-      margin-top: 24px;
       padding: 20px;
       border-radius: 12px;
       font-size: 14px;
       line-height: 1.6;
-      display: none;
-    }
-    
-    .status.active {
-      display: block;
+      height: 100%;
     }
     
     .status.loading {
@@ -278,27 +302,33 @@
       margin-top: 8px;
     }
     
+    @media (max-width: 768px) {
+      .loading-section.active {
+        flex-direction: column;
+      }
+    }
+
     @media (max-width: 640px) {
       body {
         padding: 1rem;
       }
-      
+
       .container {
         padding: 32px 24px;
       }
-      
+
       h1 {
         font-size: 26px;
       }
-      
+
       .subtitle {
         font-size: 14px;
       }
-      
+
       .logos {
         gap: 16px;
       }
-      
+
       .logo-image {
         height: 38px;
       }
@@ -315,22 +345,36 @@
       <p class="subtitle">Transform spaces with intelligent design recommendations from your Pinterest inspiration</p>
     </div>
 
-    <div class="demo-info">
+    <div class="demo-info" id="demoInfo">
       <h3>🎨 How it works</h3>
       <p>Our AI analyzes Pinterest mood boards tagged with #maisonsdumonde, curates matching furniture from the catalog, and creates photorealistic room renders using Nano Banana AI.</p>
     </div>
 
+    <div class="loading-section" id="loadingSection">
+      <div class="video-container">
+        <video id="demoVideo" loop muted playsinline>
+          <source src="demo-video.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      <div class="status-wrapper">
+        <div id="statusBox" class="status">
+          <div id="statusContent"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="resultBox" class="status" style="margin-top: 24px; display: none;">
+      <div id="resultContent"></div>
+    </div>
+
     <p class="hint">
-      ⚡ Demo takes ~60 seconds to complete
+      ⚡ Demo takes ~40 seconds to complete
     </p>
 
     <button id="launchBtn">
       <span id="btnText">🚀 Launch AI Decorator</span>
     </button>
-
-    <div id="statusBox" class="status">
-      <div id="statusContent"></div>
-    </div>
   </div>
 
   <script>
@@ -339,6 +383,11 @@
     const btnText = document.getElementById('btnText');
     const statusBox = document.getElementById('statusBox');
     const statusContent = document.getElementById('statusContent');
+    const resultBox = document.getElementById('resultBox');
+    const resultContent = document.getElementById('resultContent');
+    const demoInfo = document.getElementById('demoInfo');
+    const loadingSection = document.getElementById('loadingSection');
+    const demoVideo = document.getElementById('demoVideo');
 
     const steps = [
       { icon: '📌', text: 'Fetching Pinterest inspiration...' },
@@ -352,14 +401,14 @@
     let progressInterval;
 
     function showStatus(type, message, showProgress = false) {
-      statusBox.className = `status active ${type}`;
-      
+      statusBox.className = `status ${type}`;
+
       let html = message;
-      
+
       if (showProgress) {
         html += '<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>';
         html += '<div class="steps" id="stepsContainer"></div>';
-        
+
         setTimeout(() => {
           const stepsContainer = document.getElementById('stepsContainer');
           if (stepsContainer) {
@@ -373,8 +422,14 @@
           }
         }, 100);
       }
-      
+
       statusContent.innerHTML = html;
+    }
+
+    function showResult(type, message) {
+      resultBox.className = `status ${type}`;
+      resultBox.style.display = 'block';
+      resultContent.innerHTML = message;
     }
 
     function animateProgress() {
@@ -413,6 +468,13 @@
     launchBtn.addEventListener('click', async () => {
       launchBtn.disabled = true;
       btnText.textContent = '⏳ Processing...';
+
+      // Hide demo info and result, show loading section with video
+      demoInfo.style.display = 'none';
+      resultBox.style.display = 'none';
+      loadingSection.classList.add('active');
+      demoVideo.play();
+
       showStatus('loading', '<span class="spinner"></span><strong>AI Decorator running...</strong><br>Analyzing Pinterest board, curating furniture, and generating render', true);
 
       try {
@@ -431,9 +493,16 @@
         }
 
         const data = await response.json();
-        
+
         clearProgress();
-        showStatus('success', `
+
+        // Hide loading section, show demo info and result
+        loadingSection.classList.remove('active');
+        demoVideo.pause();
+        demoVideo.currentTime = 0;
+        demoInfo.style.display = 'block';
+
+        showResult('success', `
           <strong>✅ Demo completed successfully!</strong>
           <div class="badge">Execution Complete</div>
           <p style="margin-top: 12px; font-size: 13px;">
@@ -447,7 +516,14 @@
         
       } catch (error) {
         clearProgress();
-        showStatus('error', `
+
+        // Hide loading section, show demo info and result
+        loadingSection.classList.remove('active');
+        demoVideo.pause();
+        demoVideo.currentTime = 0;
+        demoInfo.style.display = 'block';
+
+        showResult('error', `
           <strong>❌ Demo failed</strong><br>
           ${error.message}<br><br>
           <small>This could be due to network issues or the workflow being inactive. Please try again or check the n8n workflow status.</small>
