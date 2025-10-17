@@ -65,23 +65,17 @@
   <pre id="result">Waiting for input…</pre>
 
   <script>
-    const WEBHOOK_URL = 'https://erolp.app.n8n.cloud/webhook/github-button';
+    const WEBHOOK_URL = 'https://erolp.app.n8n.cloud/webhook/mdm-launch';
 
     const launchButton = document.getElementById('launch');
     const resultEl = document.getElementById('result');
 
     launchButton.addEventListener('click', async () => {
       launchButton.disabled = true;
-      resultEl.textContent = 'Running workflow… (this may take 30-60 seconds)';
+      resultEl.textContent = 'Testing webhook...';
 
       try {
-        const response = await fetch(WEBHOOK_URL, { 
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({})
-        });
+        const response = await fetch(WEBHOOK_URL, { method: 'POST' });
 
         if (!response.ok) {
           const text = await response.text();
