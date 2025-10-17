@@ -57,22 +57,22 @@
   </style>
 </head>
 <body>
-  <h1>Maisons du Monde AI Decorator</h1>
+  <h1>Maisons du Monde AI Pinterest</h1>
   <p class="hint">
-    Click the button to trigger the n8n workflow.
+    Click the button to trigger the full n8n workflow (takes ~40 seconds).
   </p>
   <button id="launch">Launch Demo Workflow</button>
   <pre id="result">Waiting for input…</pre>
 
   <script>
-    const WEBHOOK_URL = 'https://erolp.app.n8n.cloud/webhook/mdm-launch';
+    const WEBHOOK_URL = 'https://erolp.app.n8n.cloud/webhook/mdm-working';
 
     const launchButton = document.getElementById('launch');
     const resultEl = document.getElementById('result');
 
     launchButton.addEventListener('click', async () => {
       launchButton.disabled = true;
-      resultEl.textContent = 'Testing webhook...';
+      resultEl.textContent = 'Running full workflow... (this will take 30-60 seconds)';
 
       try {
         const response = await fetch(WEBHOOK_URL, { method: 'POST' });
@@ -83,7 +83,7 @@
         }
 
         const data = await response.json();
-        resultEl.textContent = JSON.stringify(data, null, 2);
+        resultEl.textContent = 'SUCCESS!\n\n' + JSON.stringify(data, null, 2);
       } catch (error) {
         resultEl.textContent = `Error: ${error.message}`;
       } finally {
