@@ -2,57 +2,428 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Maisons du Monde Demo</title>
+  <title>Maisons du Monde AI Decorator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    :root { color-scheme: light dark; }
+    :root { 
+      color-scheme: light dark;
+      --primary: #667eea;
+      --primary-dark: #5568d3;
+      --success: #22c55e;
+      --error: #ef4444;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      margin: 0; padding: 2rem; display: flex; flex-direction: column;
-      gap: 1.5rem; max-width: 640px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%);
     }
-    h1 { font-size: 1.75rem; margin: 0; }
+    
+    .container {
+      background: white;
+      border-radius: 24px;
+      padding: 48px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.6s ease-out;
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .logos {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .logo-image {
+      height: 45px;
+      width: auto;
+      object-fit: contain;
+      opacity: 0.9;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    
+    .logo-image:hover {
+      transform: scale(1.05);
+      opacity: 1;
+    }
+    
+    h1 {
+      color: var(--primary);
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+    
+    .subtitle {
+      color: #64748b;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    
+    .demo-info {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      border-left: 4px solid var(--primary);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 32px;
+    }
+    
+    .demo-info h3 {
+      color: var(--primary);
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .demo-info p {
+      color: #475569;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    
+    .hint {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
     button {
-      align-self: flex-start; font-size: 1rem; padding: 0.75rem 1.5rem;
-      border: none; border-radius: 999px; background: #1f2bf0; color: #fff;
-      cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease;
+      width: 100%;
+      font-size: 17px;
+      font-weight: 600;
+      padding: 18px 32px;
+      border: none;
+      border-radius: 12px;
+      background: var(--primary);
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
     }
+    
+    button::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+    
+    button:hover:not(:disabled)::before {
+      width: 300px;
+      height: 300px;
+    }
+    
     button:hover:not(:disabled) {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 20px rgba(31, 43, 240, 0.3);
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
     }
-    button:disabled { opacity: 0.6; cursor: progress; }
-    pre {
-      background: rgba(0, 0, 0, 0.05); padding: 1rem;
-      border-radius: 0.75rem; font-size: 0.9rem;
-      white-space: pre-wrap; word-break: break-word; min-height: 6rem;
+    
+    button:active:not(:disabled) {
+      transform: translateY(0);
     }
-    .hint { font-size: 0.9rem; color: rgba(0, 0, 0, 0.65); }
+    
+    button:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    button span {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .status {
+      margin-top: 24px;
+      padding: 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.6;
+      display: none;
+    }
+    
+    .status.active {
+      display: block;
+    }
+    
+    .status.loading {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      border-left: 4px solid var(--primary);
+    }
+    
+    .status.success {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border-left: 4px solid var(--success);
+      color: #166534;
+    }
+    
+    .status.error {
+      background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+      border-left: 4px solid var(--error);
+      color: #991b1b;
+    }
+    
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #e2e8f0;
+      border-top: 2px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 3px;
+      margin-top: 16px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 3px;
+      transition: width 0.5s ease;
+      width: 0%;
+    }
+    
+    .steps {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #e2e8f0;
+    }
+    
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      font-size: 13px;
+      color: #94a3b8;
+      transition: color 0.3s ease;
+    }
+    
+    .step.active {
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    .step-icon {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 50px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--success);
+      color: white;
+      margin-top: 8px;
+    }
+    
+    @media (max-width: 640px) {
+      body {
+        padding: 1rem;
+      }
+      
+      .container {
+        padding: 32px 24px;
+      }
+      
+      h1 {
+        font-size: 26px;
+      }
+      
+      .subtitle {
+        font-size: 14px;
+      }
+      
+      .logos {
+        gap: 16px;
+      }
+      
+      .logo-image {
+        height: 38px;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>Maisons du Monde AI Decorator</h1>
-  <p class="hint">Click to trigger workflow (takes ~60 seconds).</p>
-  <button id="launch">Launch Demo Workflow</button>
-  <pre id="result">Waiting for input…</pre>
+  <div class="container">
+    <div class="header">
+      <div class="logos">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Maisons_du_Monde_logo.svg/320px-Maisons_du_Monde_logo.svg.png" alt="Maisons du Monde" class="logo-image">
+      </div>
+      <h1>AI Interior Decorator</h1>
+      <p class="subtitle">Transform spaces with intelligent design recommendations from your Pinterest inspiration</p>
+    </div>
+
+    <div class="demo-info">
+      <h3>🎨 How it works</h3>
+      <p>Our AI analyzes Pinterest mood boards tagged with #maisonsdumonde, curates matching furniture from the catalog, and creates photorealistic room renders using Nano Banana AI.</p>
+    </div>
+
+    <p class="hint">
+      ⚡ Demo takes ~60 seconds to complete
+    </p>
+
+    <button id="launchBtn">
+      <span id="btnText">🚀 Launch AI Decorator</span>
+    </button>
+
+    <div id="statusBox" class="status">
+      <div id="statusContent"></div>
+    </div>
+  </div>
 
   <script>
     const WEBHOOK_URL = 'https://erolp.app.n8n.cloud/webhook/mdm-working';
-    const launchButton = document.getElementById('launch');
-    const resultEl = document.getElementById('result');
+    const launchBtn = document.getElementById('launchBtn');
+    const btnText = document.getElementById('btnText');
+    const statusBox = document.getElementById('statusBox');
+    const statusContent = document.getElementById('statusContent');
 
-    launchButton.addEventListener('click', async () => {
-      launchButton.disabled = true;
-      resultEl.textContent = 'Running workflow... (30-60 seconds)';
+    const steps = [
+      { icon: '📌', text: 'Fetching Pinterest inspiration...' },
+      { icon: '🤖', text: 'AI analyzing room and style...' },
+      { icon: '🛋️', text: 'Curating furniture from catalog...' },
+      { icon: '🎨', text: 'Generating photorealistic render...' },
+      { icon: '✨', text: 'Publishing to Pinterest...' }
+    ];
+
+    let currentStep = 0;
+    let progressInterval;
+
+    function showStatus(type, message, showProgress = false) {
+      statusBox.className = `status active ${type}`;
+      
+      let html = message;
+      
+      if (showProgress) {
+        html += '<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>';
+        html += '<div class="steps" id="stepsContainer"></div>';
+        
+        setTimeout(() => {
+          const stepsContainer = document.getElementById('stepsContainer');
+          if (stepsContainer) {
+            steps.forEach((step, index) => {
+              const stepEl = document.createElement('div');
+              stepEl.className = 'step';
+              stepEl.innerHTML = `<span class="step-icon">${step.icon}</span><span>${step.text}</span>`;
+              stepsContainer.appendChild(stepEl);
+            });
+            animateProgress();
+          }
+        }, 100);
+      }
+      
+      statusContent.innerHTML = html;
+    }
+
+    function animateProgress() {
+      const progressFill = document.getElementById('progressFill');
+      const stepElements = document.querySelectorAll('.step');
+      
+      if (!progressFill || !stepElements.length) return;
+      
+      currentStep = 0;
+      const stepDuration = 12000; // 12 seconds per step (60 seconds total for 5 steps)
+      const progressIncrement = 100 / steps.length;
+      
+      function updateStep() {
+        if (currentStep < steps.length) {
+          // Remove active from all steps
+          stepElements.forEach(el => el.classList.remove('active'));
+          // Add active to current step
+          stepElements[currentStep].classList.add('active');
+          // Update progress bar
+          progressFill.style.width = `${(currentStep + 1) * progressIncrement}%`;
+          currentStep++;
+        }
+      }
+      
+      updateStep();
+      progressInterval = setInterval(updateStep, stepDuration);
+    }
+
+    function clearProgress() {
+      if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+      }
+    }
+
+    launchBtn.addEventListener('click', async () => {
+      launchBtn.disabled = true;
+      btnText.textContent = '⏳ Processing...';
+      showStatus('loading', '<span class="spinner"></span><strong>AI Decorator running...</strong><br>Analyzing Pinterest board, curating furniture, and generating render', true);
 
       try {
-        // Use FormData to avoid CORS preflight!
+        // Use FormData to avoid CORS preflight - this is the key fix!
         const formData = new FormData();
-        formData.append('trigger', 'true');
+        formData.append('trigger', 'demo');
+        formData.append('timestamp', new Date().toISOString());
         
         const response = await fetch(WEBHOOK_URL, { 
           method: 'POST',
-          body: formData  // NO Content-Type header = no preflight!
+          body: formData  // NO Content-Type header = no CORS preflight!
         });
 
         if (!response.ok) {
@@ -60,11 +431,30 @@
         }
 
         const data = await response.json();
-        resultEl.textContent = 'SUCCESS!\n\n' + JSON.stringify(data, null, 2);
+        
+        clearProgress();
+        showStatus('success', `
+          <strong>✅ Demo completed successfully!</strong>
+          <div class="badge">Execution Complete</div>
+          <p style="margin-top: 12px; font-size: 13px;">
+            Workflow executed: Pinterest → AI Analysis → Catalog Curation → Render → Publish<br>
+            <em>Check your Pinterest board for the new decorated room pin!</em>
+          </p>
+        `);
+        
+        btnText.textContent = '✨ Run Again';
+        launchBtn.disabled = false;
+        
       } catch (error) {
-        resultEl.textContent = `Error: ${error.message}`;
-      } finally {
-        launchButton.disabled = false;
+        clearProgress();
+        showStatus('error', `
+          <strong>❌ Demo failed</strong><br>
+          ${error.message}<br><br>
+          <small>This could be due to network issues or the workflow being inactive. Please try again or check the n8n workflow status.</small>
+        `);
+        
+        btnText.textContent = '🔄 Try Again';
+        launchBtn.disabled = false;
       }
     });
   </script>
