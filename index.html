@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Maisons du Monde AI Decorator</title>
+  <title>Maisons du Monde Décorateur IA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root { 
@@ -341,20 +341,20 @@
       <div class="logos">
         <img src="mdm-logo.jpg" alt="Maisons du Monde" class="logo-image">
       </div>
-      <h1>AI Interior Decorator</h1>
-      <p class="subtitle">Transform spaces with intelligent design recommendations from your Pinterest inspiration</p>
+      <h1>Décorateur d'Intérieur IA</h1>
+      <p class="subtitle">Transformez vos espaces avec des recommandations de design intelligentes inspirées de Pinterest</p>
     </div>
 
     <div class="demo-info" id="demoInfo">
-      <h3>🎨 How it works</h3>
-      <p>Our AI analyzes Pinterest mood boards tagged with #maisonsdumonde, curates matching furniture from the catalog, and creates photorealistic room renders using Nano Banana AI.</p>
+      <h3>🎨 Comment ça marche</h3>
+      <p>Notre IA analyse les tableaux Pinterest étiquetés #maisonsdumonde, sélectionne les meubles correspondants du catalogue et crée des rendus photoréalistes avec Nano Banana AI.</p>
     </div>
 
     <div class="loading-section" id="loadingSection">
       <div class="video-container">
         <video id="demoVideo" loop muted playsinline>
           <source src="demo-video.mp4" type="video/mp4">
-          Your browser does not support the video tag.
+          Votre navigateur ne supporte pas la balise vidéo.
         </video>
       </div>
       <div class="status-wrapper">
@@ -369,11 +369,11 @@
     </div>
 
     <p class="hint">
-      ⚡ Demo takes ~40 seconds to complete
+      ⚡ La démo prend environ 40 secondes
     </p>
 
     <button id="launchBtn">
-      <span id="btnText">🚀 Launch AI Decorator</span>
+      <span id="btnText">🚀 Lancer le Décorateur IA</span>
     </button>
   </div>
 
@@ -390,11 +390,11 @@
     const demoVideo = document.getElementById('demoVideo');
 
     const steps = [
-      { icon: '📌', text: 'Fetching Pinterest inspiration...' },
-      { icon: '🤖', text: 'AI analyzing room and style...' },
-      { icon: '🛋️', text: 'Curating furniture from catalog...' },
-      { icon: '🎨', text: 'Generating photorealistic render...' },
-      { icon: '✨', text: 'Publishing to Pinterest...' }
+      { icon: '📌', text: 'Récupération de l\'inspiration Pinterest...' },
+      { icon: '🤖', text: 'Analyse IA de la pièce et du style...' },
+      { icon: '🛋️', text: 'Sélection des meubles du catalogue...' },
+      { icon: '🎨', text: 'Génération du rendu photoréaliste...' },
+      { icon: '✨', text: 'Publication sur Pinterest...' }
     ];
 
     let currentStep = 0;
@@ -467,7 +467,7 @@
 
     launchBtn.addEventListener('click', async () => {
       launchBtn.disabled = true;
-      btnText.textContent = '⏳ Processing...';
+      btnText.textContent = '⏳ En cours...';
 
       // Hide demo info and result, show loading section with video
       demoInfo.style.display = 'none';
@@ -475,7 +475,7 @@
       loadingSection.classList.add('active');
       demoVideo.play();
 
-      showStatus('loading', '<span class="spinner"></span><strong>AI Decorator running...</strong><br>Analyzing Pinterest board, curating furniture, and generating render', true);
+      showStatus('loading', '<span class="spinner"></span><strong>Décorateur IA en cours...</strong><br>Analyse du tableau Pinterest, sélection des meubles et génération du rendu', true);
 
       try {
         // Use FormData to avoid CORS preflight - this is the key fix!
@@ -503,15 +503,15 @@
         demoInfo.style.display = 'block';
 
         showResult('success', `
-          <strong>✅ Demo completed successfully!</strong>
-          <div class="badge">Execution Complete</div>
+          <strong>✅ Démo terminée avec succès !</strong>
+          <div class="badge">Exécution Terminée</div>
           <p style="margin-top: 12px; font-size: 13px;">
-            Workflow executed: Pinterest → AI Analysis → Catalog Curation → Render → Publish<br>
-            <em>Check your Pinterest board for the new decorated room pin!</em>
+            Workflow exécuté : Pinterest → Analyse IA → Sélection Catalogue → Rendu → Publication<br>
+            <em>Consultez votre tableau Pinterest pour voir la nouvelle épingle de décoration !</em>
           </p>
         `);
-        
-        btnText.textContent = '✨ Run Again';
+
+        btnText.textContent = '✨ Relancer';
         launchBtn.disabled = false;
         
       } catch (error) {
@@ -524,12 +524,12 @@
         demoInfo.style.display = 'block';
 
         showResult('error', `
-          <strong>❌ Demo failed</strong><br>
+          <strong>❌ La démo a échoué</strong><br>
           ${error.message}<br><br>
-          <small>This could be due to network issues or the workflow being inactive. Please try again or check the n8n workflow status.</small>
+          <small>Cela peut être dû à des problèmes de réseau ou au workflow inactif. Veuillez réessayer ou vérifier le statut du workflow n8n.</small>
         `);
-        
-        btnText.textContent = '🔄 Try Again';
+
+        btnText.textContent = '🔄 Réessayer';
         launchBtn.disabled = false;
       }
     });
