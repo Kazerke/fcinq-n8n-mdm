@@ -409,8 +409,8 @@
     .caption-wrapper {
       position: relative;
       background: #fafafa;
-      padding: 16px;
-      padding-bottom: 40px;
+      padding: 20px 24px;
+      padding-bottom: 50px;
       border-radius: 8px;
       margin-top: 12px;
     }
@@ -421,6 +421,36 @@
       color: #262626;
       white-space: pre-wrap;
       word-break: break-word;
+      position: relative;
+      overflow: hidden;
+      transition: max-height 0.4s ease-in-out;
+    }
+
+    .caption-text.collapsed {
+      max-height: 6.4em; /* ~4 lines at 1.6 line-height */
+    }
+
+    .caption-text.collapsed::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2.4em; /* Fade starts from line 4, covers line 5 */
+      background: linear-gradient(to bottom, transparent, #fafafa);
+      pointer-events: none;
+    }
+
+    .caption-text a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .caption-text a:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
     }
 
     .copy-btn {
@@ -451,6 +481,33 @@
       font-size: 12px;
       color: var(--success);
       font-weight: 600;
+    }
+
+    .voir-plus-btn {
+      display: inline-block;
+      margin: 12px 0 0 0;
+      padding: 4px 8px;
+      background: transparent;
+      color: #8e8e8e;
+      border: none;
+      font-size: 13px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      width: auto;
+      text-align: left;
+      border-radius: 4px;
+    }
+
+    .voir-plus-btn:hover {
+      background: var(--primary);
+      color: white;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .voir-plus-btn.hidden {
+      display: none;
     }
 
     /* Side-by-side comparison */
@@ -630,6 +687,12 @@
     function renderInstagramCard(data) {
       const { finalImageUrl, roomPhoto, moodboardUrl, legend, products, style } = data;
 
+      // Convert URLs to clickable links
+      const legendWithLinks = legend.replace(
+        /(https?:\/\/[^\s]+)/g,
+        '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+      );
+
       const instagramCard = `
         <div class="instagram-card">
           <div class="post-image-wrapper">
@@ -655,7 +718,8 @@
               </svg>
             </div>
             <div class="caption-wrapper">
-              <div class="caption-text" id="captionText">${legend}</div>
+              <div class="caption-text collapsed" id="captionText">${legendWithLinks}</div>
+              <button id="voirPlusBtn" class="voir-plus-btn">voir plus...</button>
               <button id="copyBtn" class="copy-btn">Copier</button>
               <span id="copyStatus" class="copy-status"></span>
             </div>
@@ -682,6 +746,11 @@
 
       // Setup clipboard copy functionality
       setupClipboardCopy();
+
+      // Setup voir plus functionality with slight delay for layout completion
+      setTimeout(() => {
+        setupVoirPlus();
+      }, 100);
     }
 
     function setupClipboardCopy() {
@@ -718,6 +787,48 @@
         }
 
         setTimeout(() => copyStatus.textContent = '', 2500);
+      });
+    }
+
+    function setupVoirPlus() {
+      const captionText = document.getElementById('captionText');
+      const voirPlusBtn = document.getElementById('voirPlusBtn');
+
+      if (!captionText || !voirPlusBtn) return;
+
+      // Check if text needs truncation
+      const lineHeight = parseFloat(getComputedStyle(captionText).lineHeight);
+      const maxHeight = lineHeight * 4; // 4 lines
+
+      // Remove collapsed class temporarily to measure full height
+      captionText.classList.remove('collapsed');
+      const fullHeight = captionText.scrollHeight;
+      captionText.classList.add('collapsed');
+
+      // Hide button if content fits in 4 lines
+      if (fullHeight <= maxHeight) {
+        voirPlusBtn.classList.add('hidden');
+        captionText.classList.remove('collapsed');
+        return;
+      }
+
+      // Set explicit max-height for smooth animation
+      captionText.style.maxHeight = '6.4em';
+
+      // Toggle expand/collapse on click
+      let isExpanded = false;
+      voirPlusBtn.addEventListener('click', () => {
+        isExpanded = !isExpanded;
+
+        if (isExpanded) {
+          captionText.classList.remove('collapsed');
+          captionText.style.maxHeight = fullHeight + 'px';
+          voirPlusBtn.textContent = 'voir moins';
+        } else {
+          captionText.classList.add('collapsed');
+          captionText.style.maxHeight = '6.4em';
+          voirPlusBtn.textContent = 'voir plus...';
+        }
       });
     }
 
